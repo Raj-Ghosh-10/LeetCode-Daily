@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 import java.util.List;
 
-public class Solution {
+public class p3333 {
     private static final int MOD = (int)1e9 + 7;
 
     public int possibleStringCount(String word, int k) {
