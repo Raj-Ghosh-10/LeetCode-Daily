@@ -1,0 +1,18 @@
+public class Solution {
+    public char KthCharacter(int k) {
+        StringBuilder sb = new StringBuilder("a");
+
+        while (sb.Length < k) {
+            StringBuilder next = new StringBuilder();
+            for (int i = 0; i < sb.Length; i++) {
+                char c = sb[i];
+                // Get the next character, wrapping from 'z' to 'a'
+                char nextChar = (char)((c - 'a' + 1) % 26 + 'a');
+                next.Append(nextChar);
+            }
+            sb.Append(next);
+        }
+
+        return sb[k - 1];
+    }
+}
