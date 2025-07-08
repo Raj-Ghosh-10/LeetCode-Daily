@@ -1,3 +1,5 @@
+import java.util.Arrays;
+
 class Solution {
     public int maxValue(int[][] events, int k) {
         Arrays.sort(events, (a, b) -> a[1] - b[1]); 
