@@ -1,0 +1,7 @@
+(define/contract (is-power-of-two n)
+  (-> exact-integer? boolean?)
+  (and (positive? n)
+       (let loop ([n n])
+         (or (= n 1)
+             (and (even? n)
+                  (loop (quotient n 2)))))))
