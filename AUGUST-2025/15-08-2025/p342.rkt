@@ -1,0 +1,6 @@
+(define/contract (is-power-of-four n)
+  (-> exact-integer? boolean?)
+  (and (> n 0)
+       (< (abs (- (log n 4)
+                  (round (log n 4))))
+          1e-13)))
