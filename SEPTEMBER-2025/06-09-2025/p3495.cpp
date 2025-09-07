@@ -19,7 +19,7 @@ public:
                                                                                                         static long long minOperations(vector<vector<int>>& queries) {
                                                                                                                 precompute();
                                                                                                                         long long op=0;
-                                                                                                                                for(auto& q: queries){
+                                                                                                                               for(auto& q: queries){
                                                                                                                                             int l=q[0]-1, r=q[1];
                                                                                                                                                         op+=(expSum(r)-expSum(l)+1)/2;// ceiling of (expSum(r)-expSum(l))/2
                                                                                                                                                                 }
