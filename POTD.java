@@ -1,16 +1,20 @@
 class Solution {
-public:
-    vector<string> removeAnagrams(vector<string>& words) {
-        for(int i = 1;i<words.size();i++){
-            string x = words[i];
-            sort(x.begin(),x.end());
-            string y = words[i-1];
-            sort(y.begin(),y.end());
-            if(x == y){
-                words.erase(words.begin() + i);
-                i--;
+    public boolean hasIncreasingSubarrays(List<Integer> nums, int k) {
+        int n = nums.size();
+        int inc = 1, prevInc = 0, maxLen = 0;
+
+        for (int i = 1; i < n; i++) {
+            if (nums.get(i) > nums.get(i - 1)) {
+                inc++;
+            } else {
+                prevInc = inc;
+                inc = 1;
             }
+
+            maxLen = Math.max(maxLen, Math.max(inc >> 1, Math.min(prevInc, inc)));
+            if (maxLen >= k) return true;
         }
-        return words;
+
+        return false;
     }
-};
+}
