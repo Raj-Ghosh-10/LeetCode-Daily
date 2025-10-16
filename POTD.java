@@ -1,21 +1,26 @@
 class Solution {
-    public int maxIncreasingSubarrays(List<Integer> nums) {
-        int n = nums.size();
-        int inc = 1;
-        int prevInc = 0;
-        int ans = Integer.MIN_VALUE;
-
-        for(int i = 1; i < n; i++){
-            if(nums.get(i) > nums.get(i-1)){
-                inc++;
-            }
-            else{
-                prevInc = inc;
-                inc = 1;
-            }
-            if(prevInc >= inc) ans = Math.max(ans, inc);
-            else ans = Math.max(ans, inc/2);  
+    public int findSmallestInteger(int[] nums, int value) {
+        int[] cnt = new int[value];
+        for (int x: nums){
+            int m = mod(x, value);
+            cnt[m]++;
         }
-        return ans;
+        int i = 0;
+        while (true){
+            int m = i % value;
+            if (cnt[m] > 0) {
+                cnt[m]--;
+                i++;
+            }else {
+                return i;
+            }
+        }
+    }
+    public int mod(int num, int m){
+        int raj = num % m;
+        if (raj < 0){
+            raj += m;
+        } 
+        return raj;
     }
 }
