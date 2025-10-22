@@ -1,25 +1,45 @@
+import java.util.*;
+
 class Solution {
-    public int maxFrequency(int[] nums, int k, int ops) {
-        int mx = 0;
-        for (int x : nums) mx = Math.max(mx, x);
-        
-        int n = mx + k + 2;
-        int[] f = new int[n];
-        for (int x : nums) f[x]++;
-        
-        int[] pre = new int[n];
-        pre[0] = f[0];
-        for (int i = 1; i < n; i++) pre[i] = pre[i - 1] + f[i];
-        
-        int ans = 0;
-        for (int t = 0; t < n; t++) {
-            if (f[t] == 0 && ops == 0) continue;
-            int l = Math.max(0, t - k);
-            int r = Math.min(n - 1, t + k);
-            int tot = pre[r] - (l > 0 ? pre[l - 1] : 0);
-            int adj = tot - f[t];
-            int val = f[t] + Math.min(ops, adj);
-            ans = Math.max(ans, val);
+    private int check(int[] nums, int n, int t, int m) {
+        long nL = n;
+        long tL = t;
+        int l = lowerBound(nums, nL);
+        int h = upperBound(nums, nL);
+        int ll = lowerBound(nums, nL - tL);
+        int hh = upperBound(nums, nL + tL);
+        int res = (hh - h) + (l - ll);
+        return Math.min(m, res) + (h - l);
+    }
+
+    private int lowerBound(int[] arr, long target) {
+        int l = 0, r = arr.length;
+        while (l < r) {
+            int mid = (l + r) / 2;
+            if (arr[mid] < target) l = mid + 1;
+            else r = mid;
+        }
+        return l;
+    }
+
+    private int upperBound(int[] arr, long target) {
+        int l = 0, r = arr.length;
+        while (l < r) {
+            int mid = (l + r) / 2;
+            if (arr[mid] <= target) l = mid + 1;
+            else r = mid;
+        }
+        return l;
+    }
+
+    public int maxFrequency(int[] nums, int k, int numOperations) {
+        int m = numOperations;
+        Arrays.sort(nums);
+        int ans = 1;
+        for (int i = 0; i < nums.length - 1; i++) {
+            ans = Math.max(ans, check(nums, nums[i], k, m));
+            ans = Math.max(ans, check(nums, nums[i] - k, k, m));
+            ans = Math.max(ans, check(nums, nums[i] + k, k, m));
         }
         return ans;
     }
