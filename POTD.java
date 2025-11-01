@@ -1,27 +1,25 @@
 class Solution {
-    public int[] getSneakyNumbers(int[] nums) {
-        int xor = 0;
-        int n = nums.length - 2;
-        for (int num : nums) {
-            xor ^= num;
+    public ListNode modifiedList(int[] nums, ListNode head) {
+        int max = -1;
+        for(int num : nums ){
+            max = num > max ? num : max;
         }
-        for (int i = 0; i < n; i++) {
-            xor ^= i;
+        boolean[] freq = new boolean[max+1];
+
+        for(int num : nums) freq[num] = true;
+
+        ListNode temp = new ListNode();
+        ListNode current = temp;
+
+        while(head != null){
+            if( head.val >= freq.length || freq[head.val] == false){
+                current.next = head;
+                current = current.next;
+            }
+            head = head.next;
         }
-        int diffBit = xor & -xor;
-        int a = 0, b = 0;
-        for (int num : nums) {
-            if ((num & diffBit) == 0) 
-                a ^= num;
-            else 
-                b ^= num;
-        }
-        for (int i = 0; i < n; i++) {
-            if ((i & diffBit) == 0) 
-                a ^= i;
-            else 
-                b ^= i;
-        }
-        return new int[]{a, b};
+
+        current.next = null;
+        return temp.next;
     }
 }
