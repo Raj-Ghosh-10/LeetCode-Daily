@@ -70,3 +70,77 @@ class Solution(object):
             res.append(value)
 
         return res
+
+
+#python 3
+
+
+class Solution:
+    def findXSum(self, nums, k, x):
+        res = []
+        cnt = defaultdict(int)
+
+        top = []
+        bot = []
+        running_sum = 0
+
+        def key_for(count, val):
+            return (-count, -val)
+
+        def remove_from_sorted(lst, key):
+            i = bisect_left(lst, key)
+            if i < len(lst) and lst[i] == key:
+                lst.pop(i)
+                return True
+            return False
+
+        for i, v in enumerate(nums):
+            old_count = cnt[v]
+
+            if old_count:
+                key_old = key_for(old_count, v)
+                if remove_from_sorted(bot, key_old):
+                    pass
+                else:
+                    removed = remove_from_sorted(top, key_old)
+                    if removed:
+                        running_sum -= old_count * v
+
+            cnt[v] = old_count + 1
+            key_new = key_for(old_count + 1, v)
+            insort(top, key_new)
+            running_sum += (old_count + 1) * v
+
+            if len(top) > x:
+                moved_key = top.pop()
+                moved_count = -moved_key[0]
+                moved_val = -moved_key[1]
+                running_sum -= moved_count * moved_val
+                insort(bot, moved_key)
+            if i >= k:
+                out = nums[i - k]
+                c = cnt[out]
+                key_curr = key_for(c, out)
+                if remove_from_sorted(bot, key_curr):
+                    pass
+                else:
+                    removed = remove_from_sorted(top, key_curr)
+                    if removed:
+                        running_sum -= c * out
+
+                if c > 1:
+                    new_key = key_for(c - 1, out)
+                    insort(bot, new_key)
+                cnt[out] = c - 1
+
+                if len(top) < x and bot:
+                    promote_key = bot.pop(0)
+                    promote_count = -promote_key[0]
+                    promote_val = -promote_key[1]
+                    insort(top, promote_key)
+                    running_sum += promote_count * promote_val
+
+            if i + 1 >= k:
+                res.append(running_sum)
+
+        return res
