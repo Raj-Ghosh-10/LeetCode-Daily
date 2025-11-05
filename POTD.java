@@ -1,40 +1,55 @@
 class Solution {
-    public int[] findXSum(int[] nums, int k, int x) {
-        int[] result = new int[nums.length - k + 1];
-        for (int i = 0; i < result.length; i++) {
-            int left = i, right = i + k - 1;
-            result[i] = findXSumofSubArray(nums, left, right, x);
+    private int x;
+    private long sum = 0L;
+    private Map<Integer, Integer> freq;
+    private final TreeSet<int[]> active = new TreeSet<>((a, b) -> a[0] == b[0] ? a[1] - b[1] : a[0] - b[0]), inactive = new TreeSet<>((a, b) -> a[0] == b[0] ? a[1] - b[1] : a[0] - b[0]);
+    public long[] findXSum(int[] nums, int k, int x) {
+        int n = nums.length;
+        this.x = x;
+        freq = new HashMap<>(n);
+        long[] ans = new long[n - k + 1];
+        for(int i = 0; i < n; i++) {
+            int count = freq.merge(nums[i], 1, Integer::sum);
+            remove(count - 1, nums[i]);
+            add(count, nums[i]);
+            if(i + 1 >= k) {
+                ans[i - k + 1] = sum;
+                count = freq.merge(nums[i - k + 1], -1, Integer::sum);
+                remove(count + 1, nums[i - k + 1]);
+                add(count, nums[i - k + 1]);
+            }
         }
-        return result;
+        return ans;
     }
-    private int findXSumofSubArray(int[] nums, int left, int right, int x) {
-        int sum = 0, distinctCount = 0;
-        int[] freq = new int[51]; 
-        for (int i = left; i <= right; i++) {
-            sum += nums[i];
-            if (freq[nums[i]] == 0) {
-                distinctCount++;
-            }
-            freq[nums[i]]++;
+    private void add(int count, int num) {
+        if(count == 0) return;
+        int[] val = new int[] {count, num};
+        if(active.size() < x) {
+            active.add(val);
+            sum += (long)count * num;
+            return;
         }
-        if (distinctCount < x) {
-            return sum;
+        int[] temp = active.first();
+        if(temp[0] > count || temp[0] == count && temp[1] >= num) {
+            inactive.add(val);
+            return;
         }
-        sum = 0;
-        for (int pick = 0; pick < x; pick++) {
-            int bestFreq = -1;
-            int bestVal = -1;
-            for (int val = 50; val >= 1; val--) {
-                if (freq[val] > bestFreq) {
-                    bestFreq = freq[val];
-                    bestVal = val;
-                }
-            }
-            if (bestVal != -1) {
-                sum += bestVal * bestFreq;
-                freq[bestVal] = 0;
-            }
+        sum += (long)count * num - (long)temp[0] * temp[1];
+        inactive.add(active.pollFirst());
+        active.add(val);
+    }
+    private void remove(int count, int num) {
+        if(count == 0) return;
+        int[] val = new int[] {count, num};
+        if(inactive.contains(val)) {
+            inactive.remove(val);
+            return;
         }
-        return sum;
+        active.remove(val);
+        sum -= (long)count * num;
+        if(inactive.isEmpty()) return;
+        int[] temp = inactive.pollLast();
+        sum += (long)temp[0] * temp[1];
+        active.add(temp);
     }
 }
