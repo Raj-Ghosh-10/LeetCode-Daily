@@ -1,76 +1,49 @@
 class Solution {
-
-    public void dfs(List<List<Integer>> arr, int [] memo, int c,  int u) {
-        memo[u] = c;
-
-        for (int v : arr.get(u)) {
-            if (memo[v] == c) continue;
-            dfs(arr, memo, c, v);
+    public long maxPower(int[] stations, int r, long k) {
+        int n = stations.length;
+        long[] power = new long[n];
+        long window = 0;
+        int windowSize = 2 * r + 1;
+        for (int j = 0; j <= Math.min(n - 1, r); j++) window += stations[j];
+        for (int i = 0; i < n; i++) {
+            power[i] = window;
+            int removeIdx = i - r;
+            if (removeIdx >= 0) window -= stations[removeIdx];
+            int addIdx = i + r + 1;
+            if (addIdx < n) window += stations[addIdx];
         }
-    }
- 
-    public int[] processQueries(int n, int[][] edges, int[][] queries) {
-
-        int m = edges.length;
-
-        List<List<Integer>> arr = new ArrayList<>();
-        for (int i = 0; i <= n; i++) arr.add(new ArrayList<>());
-
-        for (int [] e: edges) {
-            arr.get(e[0]).add(e[1]);
-            arr.get(e[1]).add(e[0]);
-        }  
-
-        int [] memo = new int[n + 1];
-        int cur = 0;
-
-        for (int i = 1; i <= n; i++) {
-            if (memo[i] != 0) continue;
-            cur++;
-            dfs(arr, memo, cur, i);
-        }
-
-        List<List<Integer>> g = new ArrayList<>();
-        for (int i = 0; i <= cur; i++) g.add(new ArrayList<>());
-
-        for (int i = 1; i <= n; i++) {
-            g.get(memo[i]).add(i);
-        }
-
-        int [] pts = new int[cur + 1];
-        boolean [] off = new boolean[n + 1];
-
-        List<Integer> ans1 = new ArrayList<>();
-
-        for (int i = 0; i < queries.length; i++) {
-            if (queries[i][0] == 2) {
-                off[queries[i][1]] = true;
-                continue;
-            } 
-                
-            if (!off[queries[i][1]]) {
-                ans1.add(queries[i][1]);
-                continue;
-            } 
-            
-            int gr = memo[queries[i][1]];
-            List<Integer> group = g.get(gr);
-
-            int pt = pts[gr];
-            while (pt < group.size() && off[group.get(pt)]) pt++;
-
-            if (pt >= group.size()) {
-                ans1.add(-1);
+        long low = 0;
+        long high = Arrays.stream(power).max().orElse(0L) + k;
+        long best = 0;
+        while (low <= high) {
+            long mid = low + (high - low) / 2;
+            if (canReach(power, r, k, mid)) {
+                best = mid;
+                low = mid + 1;
             } else {
-                ans1.add(group.get(pt));
+                high = mid - 1;
             }
-            
-            pts[gr] = pt;
         }
+        return best;
+    }
+    private boolean canReach(long[] power, int r, long k, long target) {
+        int n = power.length;
+        long used = 0L;
+        long[] diff = new long[n + 1];
+        long curAdd = 0L;
 
-        int [] ans = new int[ans1.size()];
-        for (int i = 0; i < ans1.size(); i++) ans[i] = ans1.get(i);
-
-        return ans;
+        for (int i = 0; i < n; i++) {
+            curAdd += diff[i];
+            long total = power[i] + curAdd;
+            if (total < target) {
+                long need = target - total;
+                used += need;
+                if (used > k) return false;
+                curAdd += need;
+                int end = Math.min(n, i + 2 * r + 1);
+                diff[end] -= need;
+            }
+        }
+        return true;
     }
 }
