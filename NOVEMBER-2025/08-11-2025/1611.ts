@@ -1,4 +1,4 @@
-function minimumOneBitOperations(n: number): number {
+function minimumOneBitperations(n: number): number {
     let bin = n.toString(2).split('').reverse() // bit array stack
 
     let result = 0
