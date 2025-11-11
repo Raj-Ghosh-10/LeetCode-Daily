@@ -1,17 +1,21 @@
 class Solution {
-    public int minOperations(int[] nums) {
-        var stack = new int[nums.length + 1];
-        var top = 0;
-        var ans = 0;
-        for (var i = 0; i < nums.length; i++) {
-            while (stack[top] > nums[i]) {
-                top--;
-                ans++;
+    public int findMaxForm(String[] S, int M, int N) {
+        int[][] dp = new int[M+1][N+1];
+        for (String str : S) {
+            int zeros = 0, ones = 0;
+            for (char c : str.toCharArray()){
+                if (c == '0') { 
+                    zeros++;
+                } else {
+                    ones++;
+                }
             }
-            if (stack[top] != nums[i]){
-                stack[++top] = nums[i];
+            for (int i = M; i >= zeros; i--){
+                for (int j = N; j >= ones; j--){
+                    dp[i][j] = Math.max(dp[i][j], dp[i-zeros][j-ones] + 1);
+                }
             }
         }
-        return ans + top;
+        return dp[M][N];
     }
 }
