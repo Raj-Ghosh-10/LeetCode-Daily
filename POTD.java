@@ -1,14 +1,14 @@
 class Solution {
-    public boolean kLengthApart(int[] nums, int k) {
-        int prev = -1;
-        for (int i = 0; i < nums.length; i++) {
-            if (nums[i] == 1) {
-                if (prev != -1 && (i - prev - 1) < k) {
-                    return false;
-                }
-                prev = i;
+    public int findFinalValue(int[] nums, int k) {
+        int bits = 0;
+        for (int num : nums) {
+            if (num % k != 0) continue;
+            int n = num / k;
+            if ((n & (n - 1)) == 0){
+                bits |= n;
             }
         }
-        return true;
+        bits++;
+        return k * (bits & -bits);
     }
 }
