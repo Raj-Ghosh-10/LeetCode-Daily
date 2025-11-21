@@ -1,0 +1,41 @@
+public class Solution {
+    public int CountPalindromicSubsequence(string s) {
+        int n = s.Length;
+        int[] first = new int[26];
+        int[] last = new int[26];
+
+        for (int i = 0; i < 26; i++) {
+            first[i] = -1;
+            last[i] = -1;
+        }
+
+        for (int i = 0; i < n; i++) {
+            int c = s[i] - 'a';
+            if (first[c] == -1) first[c] = i;
+            last[c] = i;
+        }
+
+        int ans = 0;
+
+        for (int c = 0; c < 26; c++) {
+            if (first[c] != -1 && last[c] - first[c] > 1) {
+                int mask = 0;
+                for (int i = first[c] + 1; i < last[c]; i++) {
+                    mask |= 1 << (s[i] - 'a');
+                }
+                ans += CountBits(mask);
+            }
+        }
+
+        return ans;
+    }
+
+    private int CountBits(int x) {
+        int count = 0;
+        while (x > 0) {
+            x &= (x - 1);
+            count++;
+        }
+        return count;
+    }
+}
