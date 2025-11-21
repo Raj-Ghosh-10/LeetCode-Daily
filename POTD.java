@@ -1,31 +1,27 @@
 class Solution {
-    public int intersectionSizeTwo(int[][] intervals) {
-        Arrays.sort(intervals, (a, b) -> Integer.compare(a[1], b[1]));
-        int prev1 = intervals[0][1] - 1;
-        int prev2 = intervals[0][1];
-        int count = 2;
-        for (int i = 1; i < intervals.length; i++) {
-            int start = intervals[i][0];
-            int end   = intervals[i][1];
-            if (prev2 < start) {
-                prev1 = end - 1;
-                prev2 = end;
-                count += 2;
-            }
-            else if (prev1 < start) {
-                if (end == prev2) {
-                    prev1 = end - 1;
-                } else {
-                    prev1 = end;
+    public int countPalindromicSubsequence(String s) {
+        int n = s.length();
+        int[] first = new int[26];
+        int[] last = new int[26];
+        for (int i = 0; i < 26; i++) {
+            first[i] = -1;
+            last[i] = -1;
+        }
+        for (int i = 0; i < n; i++) {
+            int c = s.charAt(i) - 'a';
+            if (first[c] == -1) first[c] = i;
+            last[c] = i;
+        }
+        int ans = 0;
+        for (int c = 0; c < 26; c++) {
+            if (first[c] != -1 && last[c] - first[c] > 1) {
+                int mask = 0;
+                for (int i = first[c] + 1; i < last[c]; i++) {
+                    mask |= 1 << (s.charAt(i) - 'a');
                 }
-                if (prev1 > prev2) {
-                    int temp = prev1;
-                    prev1 = prev2;
-                    prev2 = temp;
-                }
-                count += 1;
+                ans += Integer.bitCount(mask);
             }
         }
-        return count;
+        return ans;
     }
 }
