@@ -1,25 +1,28 @@
 class Solution {
-    public long maxSubarraySum(int[] nums, int k) {
-        long[] minPrefix = new long[k];
-        final long INF = Long.MAX_VALUE;
+    int ans = 0;
+    List<List<Integer>> g;
 
-        for (int i = 0; i < k; i++) minPrefix[i] = INF;
-        minPrefix[0] = 0;
-
-        long prefix = 0;
-        long answer = Long.MIN_VALUE;
-
-        for (int i = 0; i < nums.length; i++) {
-            prefix += nums[i];
-            int mod = (i + 1) % k;
-
-            if (minPrefix[mod] != INF) {
-                answer = Math.max(answer, prefix - minPrefix[mod]);
-            }
-
-            minPrefix[mod] = Math.min(minPrefix[mod], prefix);
+    long dfs(int u, int p, int[] values, int k) {
+        long sum = values[u];
+        for (int v : g.get(u)) {
+            if (v == p) continue;
+            sum += dfs(v, u, values, k);
         }
+        if (sum % k == 0) {
+            ans++;
+            return 0;
+        }
+        return sum;
+    }
 
-        return answer;
+    public int maxKDivisibleComponents(int n, int[][] edges, int[] values, int k) {
+        g = new ArrayList<>();
+        for (int i = 0; i < n; i++) g.add(new ArrayList<>());
+        for (int[] e : edges) {
+            g.get(e[0]).add(e[1]);
+            g.get(e[1]).add(e[0]);
+        }
+        dfs(0, -1, values, k);
+        return ans;
     }
 }
